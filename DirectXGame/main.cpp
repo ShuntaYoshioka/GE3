@@ -22,6 +22,12 @@
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+//DirectXInputをインクルード
+#define DERECTINPUT_VERSION 0x0800
+#include <dinput.h>
+
+#pragma comment(lib,"dinput8.lib")
+
 struct Matrix4x4 {
 	float m[4][4];
 };
@@ -368,6 +374,8 @@ IDxcBlob* CompileShader(
 
 	assert(SUCCEEDED(hr));
 
+	//assert(false && "assertのてすと");
+
 	//警告,エラーが背てたらログに出して止める
 	IDxcBlobUtf8* shaderError = nullptr;
 	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
@@ -677,6 +685,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		nullptr,
 		wc.hInstance,
 		nullptr);
+
+
 
 
 #ifdef _DEBUG
