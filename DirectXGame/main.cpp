@@ -1041,8 +1041,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	input = new Input();
 	input->Initialize(wc.hInstance, hwnd);
 
-	//入力解放
-	delete  input;
+	
 
 	//三角形2こ
 	/*
@@ -1421,6 +1420,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	//解放処理
+
+	//入力解放
+	delete  input;
+
+
 	CloseHandle(fenceEvent);
 	fence->Release();
 	rtvDescriptorHeap->Release();

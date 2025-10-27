@@ -23,7 +23,7 @@ void Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 	result = directInput->CreateDevice(
 		GUID_SysKeyboard,
 		&keyboard,
-		nullptr
+		NULL
 	);
 	assert(SUCCEEDED(result));
 
@@ -36,6 +36,7 @@ void Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 		hwnd,
 		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY
 	);
+	assert(SUCCEEDED(result));
 
 };
 void Input::Update() {
