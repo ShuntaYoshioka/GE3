@@ -1,11 +1,5 @@
 #include "Input.h"
 #include <cassert>
-#include <wrl.h>
-
-using namespace Microsoft::WRL;
-
-#define DERECTINPUT_VERSION 0x0800
-#include <dinput.h>
 
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
@@ -26,7 +20,6 @@ void Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 	assert(SUCCEEDED(result));
 
 	//キーボードデバイスの生成
-	ComPtr<IDirectInputDevice8> keyboard;
 	result = directInput->CreateDevice(
 		GUID_SysKeyboard,
 		&keyboard,
@@ -46,5 +39,13 @@ void Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 
 };
 void Input::Update() {
+	//キーボードの状態取得
+	keyboard->Acquire();
+
+	//キーボード入力保存用
+	BYTE key[256] = {};
+	keyboard->GetDeviceState(sizeof(key), key);
+
+
 };
 

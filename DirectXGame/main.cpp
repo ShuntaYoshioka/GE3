@@ -1240,8 +1240,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	indexDataSprite[5] = 2;
 
-	//キーボード入力保存用
-	BYTE key[256] = {};
 	BYTE preKey[256] = {};
 
 	//ウィンドウのXボタンが押されるまでループ
@@ -1253,10 +1251,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		} else {
 
 			//キーボードの状態取得
-			keyboard->Acquire();
-			memcpy(preKey, key,256);
-			hr = keyboard->GetDeviceState(sizeof(key), key);
+			//memcpy(preKey, key,256);
 
+			input->Update();
+		
 
 			Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 
@@ -1271,10 +1269,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
 
-			if (key[DIK_SPACE]&& !preKey[DIK_SPACE])
-			{
-				OutputDebugStringA("Press SPACE\n");//Hit0表示
-			}
+			//if (key[DIK_SPACE]&& !preKey[DIK_SPACE])
+			//{
+			//	OutputDebugStringA("Press SPACE\n");//Hit0表示
+			//}
 
 			//開発用のUIの処理
 			ImGui::ShowDemoWindow();
@@ -1412,11 +1410,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			assert(SUCCEEDED(hr));
 
 			//ESCキーが押されたらループを抜ける
-			if (key[DIK_ESCAPE])
-			{
-				OutputDebugStringA("GAME LOOP END\n");
-				break;
-			}
+			//if (key[DIK_ESCAPE])
+			//{
+			//	OutputDebugStringA("GAME LOOP END\n");
+			//	break;
+			//}
 
 		}
 
