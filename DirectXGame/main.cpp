@@ -1248,7 +1248,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			hr = keyboard->GetDeviceState(sizeof(key), key);
 
 
-
 			Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 
 			Matrix4x4 viewMatrixSprite = MakeIdentity4x4();
