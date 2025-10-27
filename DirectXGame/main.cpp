@@ -1239,8 +1239,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	indexDataSprite[5] = 2;
 
-	BYTE preKey[256] = {};
-
 	//ウィンドウのXボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
 		//Windowにメッセージが来てたら最優先で処理させる
@@ -1248,9 +1246,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} else {
-
-			//キーボードの状態取得
-			//memcpy(preKey, key,256);
 
 			input->Update();
 		
@@ -1268,10 +1263,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
 
-			//if (key[DIK_SPACE]&& !preKey[DIK_SPACE])
-			//{
-			//	OutputDebugStringA("Press SPACE\n");//Hit0表示
-			//}
+			//長押し判定
+			if (input->PushKey(DIK_0))
+			{
+			OutputDebugStringA("Press 0\n");//Hit0表示
+			}
+
+			if (input->TriggerKey(DIK_1))
+			{
+				OutputDebugStringA("Press 1\n");//Hit0表示
+			}
 
 			//開発用のUIの処理
 			ImGui::ShowDemoWindow();

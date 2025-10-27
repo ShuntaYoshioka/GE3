@@ -9,7 +9,6 @@ void Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 	HRESULT result;
 
 	//DorectINPUTインスタンス生成
-	ComPtr<IDirectInput8> directInput = nullptr;
 	result = DirectInput8Create(
 		hInstance,
 		DIRECTINPUT_VERSION,
@@ -40,13 +39,32 @@ void Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 
 };
 void Input::Update() {
+
+	//前回のキー入力を保存
+	memcpy(preKey, key,sizeof(key));
+	
 	//キーボードの状態取得
 	keyboard->Acquire();
 
 	//キーボード入力保存用
-	BYTE key[256] = {};
 	keyboard->GetDeviceState(sizeof(key), key);
 
 
-};
+}
+bool Input::PushKey(BYTE keyNumber){
+
+	if (key[keyNumber]) {
+		return true;
+	}
+	return false;
+}
+bool Input::TriggerKey(BYTE keyNumber)
+{
+	if (key[keyNumber] && !preKey[keyNumber]) {
+		return true;
+	}
+
+	return false;
+}
+;
 
