@@ -11,22 +11,21 @@
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
 #include "externals/DirectXTex/DirectXTex.h"
+#include "Input.h"
 
 #include <fstream>
 #include <sstream>
 
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
-#pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //DirectXInputをインクルード
-#define DERECTINPUT_VERSION 0x0800
-#include <dinput.h>
+//#define DERECTINPUT_VERSION 0x0800
+//#include <dinput.h>
 
-#pragma comment(lib,"dinput8.lib")
 
 struct Matrix4x4 {
 	float m[4][4];
@@ -1006,7 +1005,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	//Dorect INPUT初期化処理こ
-	IDirectInput8* directInput = nullptr;
+	/*IDirectInput8* directInput = nullptr;
 	hr = DirectInput8Create(
 		wc.hInstance,
 		DIRECTINPUT_VERSION,
@@ -1033,6 +1032,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		hwnd,
 		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY
 	);
+	*/
+
+	//ポインタ
+	Input* input = nullptr;
+
+	//入力の初期化
+	input = new Input();
+	input->Initialize(wc.hInstance, hwnd);
+
+	//入力解放
+	delete  input;
 
 	//三角形2こ
 	/*
