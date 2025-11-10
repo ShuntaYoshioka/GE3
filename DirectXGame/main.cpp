@@ -12,6 +12,7 @@
 #include "externals/imgui/imgui_impl_win32.h"
 #include "externals/DirectXTex/DirectXTex.h"
 #include "Input.h"
+#include "WinApp.h"
 
 #include <fstream>
 #include <sstream>
@@ -640,6 +641,15 @@ void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mip
 //Windoesアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
+	//ポインタ
+	WinApp* winApp = nullptr;
+
+	//windowsの初期化
+
+	winApp = new WinApp();
+	winApp->Initialize();
+	/*
+	//ウィンドウ生成
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	Log(ConvertString(std::format(L"WSTRING{}\n", L"abc")));
@@ -671,6 +681,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//クライアント領域を元に実際のサイズにwrcを変更してもらう
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
+
 	//ウィンドウの生成
 	HWND hwnd = CreateWindow(
 		wc.lpszClassName,
@@ -700,6 +711,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//ウィンドウを表示する
 	ShowWindow(hwnd, SW_SHOW);
+
+	//ここまでWindowsAPIの初期化処理
+	*/
 
 	//出力ウィンドウへの文字入力
 	OutputDebugStringA("Hello,DirectX!\n");
@@ -1247,6 +1261,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&msg);
 		} else {
 
+			//while(!winApp->proccesMessage())
+
 			input->Update();
 		
 
@@ -1425,6 +1441,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//入力解放
 	delete  input;
 
+	delete winApp;
+
 
 	CloseHandle(fenceEvent);
 	fence->Release();
@@ -1458,7 +1476,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #ifdef _DEBUG
 	debugController->Release();
 #endif
+#pragma region windowsAPIの終了
 	CloseWindow(hwnd);
+#pragma endregion WindowsAPIの終了
+
+	//winApp->Finalize();
 
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
