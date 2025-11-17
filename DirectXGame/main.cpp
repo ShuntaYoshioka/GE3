@@ -1055,7 +1055,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//入力の初期化
 	input = new Input();
-	input->Initialize(winApp->GetHinstance(), winApp->GetHwnd());
+	input->Initialize(winApp);
 
 	
 
@@ -1128,8 +1128,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//ビューボード
 	D3D12_VIEWPORT viewport{};
-	viewport.Width = kClientWidth;
-	viewport.Height = kClientHeight;
+	viewport.Width = WinApp::kClientWidth;
+	viewport.Height = WinApp::kClientHeight;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.MinDepth = 0.0f;
@@ -1138,15 +1138,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//シザー矩形
 	D3D12_RECT scissorRect{};
 	scissorRect.left = 0;
-	scissorRect.right = kClientWidth;
+	scissorRect.right = WinApp::kClientWidth;
 	scissorRect.top = 0;
-	scissorRect.bottom = kClientHeight;
+	scissorRect.bottom = WinApp::kClientHeight;
 
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
 	Transform cameraTransform{ {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
 
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kClientWidth) / float(kClientHeight), 0.1f, 100.0f);
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -1182,7 +1182,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	device->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
 
 	//depthStencilTextureをウィンドウサイズで生成
-	ID3D12Resource* depthStencilResource = CreateDepthStencilTextureResource(device, kClientWidth, kClientHeight);
+	ID3D12Resource* depthStencilResource = CreateDepthStencilTextureResource(device, WinApp::kClientWidth, WinApp::kClientHeight);
 
 	ID3D12DescriptorHeap* dsvDescriptorHeap = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
@@ -1256,12 +1256,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	indexDataSprite[5] = 2;
 
 	//ウィンドウのXボタンが押されるまでループ
-	while (msg.message != WM_QUIT) {
+	while (true) {
 		//Windowにメッセージが来てたら最優先で処理させる
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		} else {
+		if (winApp->ProcessMessage()) {
+			break;
+		} 
 
 			//while(!winApp->proccesMessage())
 
@@ -1272,7 +1271,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			Matrix4x4 viewMatrixSprite = MakeIdentity4x4();
 
-			Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(kClientWidth), float(kClientHeight), 0.0f, 100.0f); Matrix4x4 worldViewProjectionMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
+			Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::kClientWidth), float(WinApp::kClientHeight), 0.0f, 100.0f); Matrix4x4 worldViewProjectionMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
 
 			*transformationMatrixDataSprite = worldViewProjectionMatrixSprite;
 
@@ -1313,7 +1312,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-			Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(kClientWidth) / float(kClientHeight), 0.1f, 100.0f);
+			Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f);
 			Matrix4x4 worldviewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 			Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
@@ -1434,17 +1433,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//	break;
 			//}
 
-		}
+		
 
 	}
 
 	//解放処理
-
-	//入力解放
-	delete  input;
-
-	delete winApp;
-
 
 	CloseHandle(fenceEvent);
 	fence->Release();
@@ -1478,11 +1471,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #ifdef _DEBUG
 	debugController->Release();
 #endif
-#pragma region windowsAPIの終了
-	CloseWindow(winApp->GetHwnd());
-#pragma endregion WindowsAPIの終了
 
-	//winApp->Finalize();
 
 	ImGui_ImplDX12_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -1498,6 +1487,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
 		debug->Release();
 	}
+
+	//入力解放
+	delete  input;
+
+#pragma region windowsAPIの終了
+	winApp->finalize();
+#pragma endregion WindowsAPIの終了
+
+
+	delete winApp;
+
+	winApp = nullptr;
+
 
 	return 0;
 }
