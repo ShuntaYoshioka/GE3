@@ -240,7 +240,7 @@ void DirectXCommon::Initialize(WinApp* winApp) {
 	//頂点インデックス
 	ID3D12Resource* indexResourceSprite = CreateBufferResource(device, sizeof(uint32_t) * 6);
 
-	*/
+	
 
 	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
 	//リソースの先頭のアドレスから使う
