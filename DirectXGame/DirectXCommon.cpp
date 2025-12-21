@@ -287,6 +287,33 @@ void DirectXCommon::ImGuiInitialize()
 };
 
 
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages)
+{
+
+	//meta情報を取得
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+
+	//全MipMapについて
+	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
+		//MipMapLevelを指定して各Imageを取得
+		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
+		//Texureに転送
+		HRESULT hr = texture->WriteToSubresource(
+			UINT(mipLevel),
+			nullptr,
+			img->pixels,
+			UINT(img->rowPitch),
+			UINT(img->slicePitch)
+		);
+		assert(SUCCEEDED(hr));
+	}
+
+	return texture;
+
+}
+
+
+
 void DirectXCommon::PreDraw()
 {
 	//これから書き込むバックバッファのインデックスを取得
@@ -360,6 +387,28 @@ void DirectXCommon::PostDraw()
 	hr = commandList->Reset(commandAllocator.Get(), nullptr);
 	//コマンドリストのリセットに失敗した場合起動できない
 	assert(SUCCEEDED(hr));
+}
+
+void DirectXCommon::InitializeFixFPS()
+{
+	reference_ = std::chrono::steady_clock::now();
+}
+
+void DirectXCommon::UpdateFixFPS()
+{
+	const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
+	const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 65.0f));
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+	std::chrono::microseconds elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - reference_);
+
+	if (elapsed < kMinCheckTime)
+	{
+		while (std::chrono::steady_clock::now() - reference_ < kMinTime)
+		{
+			std::this_thread::sleep_for(std::chrono::microseconds(1));
+		}
+	}
+	reference_ = std::chrono::steady_clock::now();
 }
 
 
@@ -483,6 +532,8 @@ DirectX::ScratchImage DirectXCommon::LoadTexture(const std::string& filePath)
 	//ミップマップ付きのデータを返す
 	return mipImages;
 }
+
+
 
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap(
 	D3D12_DESCRIPTOR_HEAP_TYPE heapType,

@@ -7,6 +7,7 @@
 #include <string>
 #include <dxcapi.h>
 #include "StringUtility.h"
+#include <chrono>
 #include "externals/DirectXTex/DirectXTex.h"
 
 class DirectXCommon
@@ -31,13 +32,18 @@ public:
 	void FenceInitialize();
 	//ビューポート
 	void ViewportInitialize();
-	void ScissorRectInitialize();
+	void ScissorRectInitialize();//未実装
 	void CreateDXC();
 	void ImGuiInitialize();
 
 	
 	void PreDraw();
 	void PostDraw();
+
+	void InitializeFixFPS();
+
+	void UpdateFixFPS();
+
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
@@ -59,6 +65,19 @@ public:
 	Microsoft::WRL::ComPtr <ID3D12Resource>  CreateTextureResource(const DirectX::TexMetadata& metadata);
 
 	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
+
+   Microsoft::WRL::ComPtr<ID3D12Resource>UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+
+
+	ID3D12Device* GetDevice()
+	{
+		return device.Get();
+	}
+
+	ID3D12GraphicsCommandList* GetCommandList()
+	{
+		return commandList.Get();
+	}
 
 private:
 
@@ -118,5 +137,7 @@ private:
 	IDxcIncludeHandler* includeHandler;
 
 	WinApp* winApp = nullptr;
+
+	std::chrono::steady_clock::time_point reference_;
 };
 
