@@ -21,7 +21,6 @@ public:
 	void DeviceInitialize();
 	void CommandInitialize();
 	void CreateSwapChain();
-	void Descriptor();
 	///深度バッファ
 	void CreateDescriptorHeaps();
 	//RTV
