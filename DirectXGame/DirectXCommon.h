@@ -67,17 +67,6 @@ public:
 
    Microsoft::WRL::ComPtr<ID3D12Resource>UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 
-
-	ID3D12Device* GetDevice()
-	{
-		return device.Get();
-	}
-
-	ID3D12GraphicsCommandList* GetCommandList()
-	{
-		return commandList.Get();
-	}
-
 private:
 
 	//DirectX12デバイス
