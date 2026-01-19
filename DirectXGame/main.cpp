@@ -103,7 +103,7 @@ struct ModelData {
 
 
 Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-Transform cameraTransfrom{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
+Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 Transform transformSprite{ {1.0f,1.0f,1.0f,},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 Transform uvTransformSprite
 {
@@ -1010,12 +1010,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		ImGui::Render();
 
+		Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+		wvpData->World = worldMatrix;
+
+		Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
+		Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+		Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f);
+		Matrix4x4 worldviewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+		Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+
+		wvpData->WVP = worldviewProjectionMatrix;
+
+
 		dxCommon->PreDraw();
 
-	//	dxCommon->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
-	//	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere);
-	//	dxCommon->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-	//	dxCommon->GetCommandList()->IASetIndexBuffer(&indexBufferViewSphere);
+//dxCommon->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+	dxCommon->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere);
+	dxCommon->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+	dxCommon->GetCommandList()->IASetIndexBuffer(&indexBufferViewSphere);
 
 		// PrimitiveTopology
 	//	dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1078,7 +1090,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//入力解放
 	delete input;
 
-	//delete dxcCommon;
+	delete dxCommon;
 
 #pragma region windowsAPIの終了
 	winApp->finalize();
