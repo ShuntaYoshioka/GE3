@@ -9,16 +9,16 @@
 #include <dxcapi.h>
 
 #include "externals/DirectXTex/DirectXTex.h"
-#include "Input.h"
-#include "WinApp.h"
-#include "Logger.h"
+#include "engine/io/Input.h"
+#include "engine/base/WinApp.h"
+#include "engine/base/Logger.h"
 
 #include "DirectXCollision.h"
 
 #include <fstream>
 #include <sstream>
-#include "DirectXCommon.h"
-#include "StringUtility.h"
+#include "engine/base/DirectXCommon.h"
+#include "engine/base/StringUtility.h"
 
 
 
@@ -602,10 +602,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	/*/
 
 	// Shaderをコンパイルする
-	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxCommon->CompileShader(L"Object3D.VS.hlsl", L"vs_6_0");
+	Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxCommon->CompileShader(L"resources/shader/Object3D.VS.hlsl", L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxCommon->CompileShader(L"Object3D.PS.hlsl", L"ps_6_0");
+	Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxCommon->CompileShader(L"resources/shader/Object3D.PS.hlsl", L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
 	// PSOを生成する
