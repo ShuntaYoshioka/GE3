@@ -22,9 +22,9 @@
 
 
 
-#include "externals/imgui/imgui.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
+//#include "externals/imgui/imgui.h"
+//#include "externals/imgui/imgui_impl_dx12.h"
+//#include "externals/imgui/imgui_impl_win32.h"
 #include <numbers>
 #include "D3DResourceLeakChecker.h"
 
@@ -39,7 +39,7 @@ using namespace Logger;
 //#define DERECTINPUT_VERSION 0x0800
 //#include <dinput.h>
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+//extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
 
@@ -345,9 +345,9 @@ std::string ConvertString(const std::wstring& str)
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg,
 	WPARAM wparam, LPARAM lparam) {
 
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
-		return true;
-	}
+	//if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
+	//	return true;
+	//}
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
 
@@ -815,9 +815,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		//ゲームの処理
-		ImGui_ImplDX12_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
+		//ImGui_ImplDX12_NewFrame();
+		//ImGui_ImplWin32_NewFrame();
+		//ImGui::NewFrame();
 
 		//長押し判定
 		if (input->PushKey(DIK_0))
@@ -832,19 +832,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 		//開発用のUIの処理
-		ImGui::ShowDemoWindow();
+		//ImGui::ShowDemoWindow();
 
-		ImGui::Begin("Settings");
+		//ImGui::Begin("Settings");
 
-		ImGui::ColorEdit4("material", &materialData->x);
-		ImGui::DragFloat3("TextureScale", &transformSprite.scale.x, 0.1f);
-		ImGui::DragFloat3("TextureRotate", &transformSprite.rotate.x, 0.1f);
-		ImGui::DragFloat3("TextureTranslate", &transformSprite.translate.x, 0.5f);
-		ImGui::DragFloat("rotate.y", &transform.rotate.y, 0.1f);
+		//ImGui::ColorEdit4("material", &materialData->x);
+		//ImGui::DragFloat3("TextureScale", &transformSprite.scale.x, 0.1f);
+		//ImGui::DragFloat3("TextureRotate", &transformSprite.rotate.x, 0.1f);
+		//ImGui::DragFloat3("TextureTranslate", &transformSprite.translate.x, 0.5f);
+		//ImGui::DragFloat("rotate.y", &transform.rotate.y, 0.1f);
 
-		ImGui::End();
+		//ImGui::End();
 
-		ImGui::Render();
+		//ImGui::Render();
+
+		transform.rotate.y = 9.425f;
 
 		Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 		*wvpData = worldMatrix;
@@ -896,7 +898,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		dxCommon->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 		// 実際のcommandListのImGuiの描画コマンドを積む
-		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon->GetCommandList());
+		//ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon->GetCommandList());
 
 		dxCommon->PostDraw();
 
@@ -905,9 +907,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//解放処理
 
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+	//ImGui_ImplDX12_Shutdown();
+	//ImGui_ImplWin32_Shutdown();
+	//ImGui::DestroyContext();
 
 	CoUninitialize();
 
