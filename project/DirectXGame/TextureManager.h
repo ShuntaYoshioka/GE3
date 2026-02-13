@@ -12,7 +12,7 @@ class DirectXCommon;
 class TextureManager
 {
 public:
-
+	 
 	void Initialize(DirectXCommon* dxCommon);
 	//シングルトンインスタンスの取得
 	static TextureManager* GetInstance();
