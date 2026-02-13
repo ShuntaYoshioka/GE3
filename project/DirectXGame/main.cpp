@@ -314,6 +314,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* newSprite = new Sprite;
 		newSprite->Initialize(spriteCommon, dxCommon, "Resources/uvChecker.png");
+		if (i == 1 || i == 3){
+			newSprite->ChangeTexture("Resources/monsterBall.png");
+		}
 		sprites.push_back(newSprite);
 	}
 
@@ -399,7 +402,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//複数枚スプライト
 		for (size_t i = 0; i < sprites.size(); ++i) {
 			Vector2 Pos = { positions[i].x + (float)i * 260.0f, positions[i].y };
-			Vector2 Size = { sizes[i].x * 0.4f, sizes[i].y * 0.4f };
+			Vector2 Size = { sizes[i].x * 0.27f, sizes[i].y * 0.48f };
 			sprites[i]->SetPosition(Pos);
 			sprites[i]->SetRotation(rotations[i]);
 			sprites[i]->SetColor(colors[i]);
