@@ -59,11 +59,11 @@ struct VertexData {
 	Vector2 texcoord;
 };
 
-struct Transform {
-	Vector3 scale;
-	Vector3 rotate;
-	Vector3 translate;
-};
+//struct Transform {
+//	Vector3 scale;
+//	Vector3 rotate;
+//	Vector3 translate;
+//};
 
 
 struct MaterialData {
