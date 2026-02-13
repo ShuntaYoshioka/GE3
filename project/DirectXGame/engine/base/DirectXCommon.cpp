@@ -268,6 +268,12 @@ void DirectXCommon::ViewportInitialize()
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
+	//シザー矩形
+	scissorRect.left = 0;
+	scissorRect.right = WinApp::kClientWidth;
+	scissorRect.top = 0;
+	scissorRect.bottom = WinApp::kClientHeight;
+
 }
 void DirectXCommon::ScissorRectInitialize()
 {
@@ -348,6 +354,10 @@ void DirectXCommon::PreDraw()
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
 
+	//Viewportを設定
+	commandList->RSSetViewports(1, &viewport);
+	commandList->RSSetScissorRects(1, &scissorRect);
+
 	//指定した色で画面全体をクリア
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
 	commandList->ClearRenderTargetView
@@ -365,8 +375,8 @@ void DirectXCommon::PreDraw()
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorheaps[] = { srvDescriptorHeap };
 	commandList->SetDescriptorHeaps(1, descriptorheaps->GetAddressOf());
 
-	//Viewportを設定
-	commandList->RSSetViewports(1, &viewport);
+
+
 
 }
 

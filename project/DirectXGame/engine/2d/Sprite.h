@@ -20,20 +20,18 @@ public:
 
 	void Draw();
 
+	//getter
+	const Vector2& GetPosition() const { return position; }
+	float GetRotation() const { return rotation; }
+	const Vector4& GetColor() const { return materialData->color; }
+	const Vector2& GetSize() const { return size; }
 
-	struct Transform
-	{
-		Vector3 scale;
-		Vector3 rotate;
-		Vector3 translate;
-	};
+	//setter
+	void SetPosition(const Vector2& position) { this->position = position; }
+	void SetRotation(float rotation) { this->rotation = rotation; }
+	void SetColor(const Vector4& color) { materialData->color = color; }
+	void SetSize(const Vector2& size) { this->size = size; }
 
-	Transform transform =
-	{
-		{1.0f,1.0f,1.0f},
-		{0.0f,0.0f,0.0f},
-		{0.0f,0.0f,0.0f}
-	};
 private:
 	SpriteCommon* spriteCommon = nullptr;
 
@@ -60,6 +58,21 @@ private:
 		Matrix4x4 World;
 	};
 
+	struct Transform
+	{
+		Vector3 scale;
+		Vector3 rotate;
+		Vector3 translate;
+	};
+
+	Transform transform =
+	{
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f}
+	};
+
+
 	//バッファリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
@@ -75,5 +88,12 @@ private:
 	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU{};
+
+	Vector2 position = { 0.0f,0.0f };
+
+	float rotation = 0.0f;
+
+	Vector2 size = { 640.0f,360.0f };
+
 };
 

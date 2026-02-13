@@ -128,6 +128,8 @@ private:
 
 	//ビューポート
 	D3D12_VIEWPORT viewport{ };
+	//シザー矩形
+	D3D12_RECT scissorRect{};
 
 	IDxcUtils* dxcUtils;
 	IDxcCompiler3* dxcCompiler;

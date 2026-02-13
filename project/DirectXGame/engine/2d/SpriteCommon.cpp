@@ -151,10 +151,6 @@ void SpriteCommon::CreateGraphicsPipeline()
 
 void SpriteCommon::SetCommonPipelineState()
 {
-	if (!dxCommon_ || !graphicsPipelineState) {
-		OutputDebugStringA("SpriteCommon: Error! dxCommon_ or PSO is nullptr\n");
-		return;
-	}
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
 	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get()); 
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

@@ -55,15 +55,26 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, DirectXCommon* dxCommon, D3D
 
 void Sprite::Update() {
 
+	// 座標
+	transform.translate = { position.x,position.y,0.0f };
+	// 回転
+	transform.rotate = { 0.0f,0.0f,rotation };
+	// サイズ
+	transform.scale = { size.x,size.y,1.0f };
+
 	//頂点リソースにデータを叩き込む(4天分)
-	vertexData[0].position = { 0.0f,360.0f,0.0f,1.0f };
+	vertexData[0].position = { 0.0f,1.0f,0.0f,1.0f };
 	vertexData[0].texcoord = { 0.0f,1.0f };
+	//vertexData[0].normal = { 0.0f,0.0f,-1.0f };
 	vertexData[1].position = { 0.0f,0.0f,0.0f,1.0f };
 	vertexData[1].texcoord = { 0.0f,0.0f };
-	vertexData[2].position = { 640.0f,360.0f,0.0f,1.0f };
+	//vertexData[1].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[2].position = { 1.0f,1.0f,0.0f,1.0f };
 	vertexData[2].texcoord = { 1.0f,1.0f };
-	vertexData[3].position = { 640.0f,0.0f,0.0f,1.0f };
+	//vertexData[2].normal = { 0.0f,0.0f,-1.0f };
+	vertexData[3].position = { 1.0f,0.0f,0.0f,1.0f };
 	vertexData[3].texcoord = { 1.0f,0.0f };
+	//vertexData[3].normal = { 0.0f,0.0f,-1.0f };
 
 	//インデックスリソースにデータを叩き込む(6個分)
 	indexData[0] = 0;
