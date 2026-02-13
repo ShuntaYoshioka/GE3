@@ -114,7 +114,7 @@ private:
 	// アンカーポイント
 	Vector2 anchorPoint = { 0.0f,0.0f };
 
-	//フリップ_
+	//フリップ
 	bool isFlipX_ = false;
 	bool isFlipY_ = false;
 
