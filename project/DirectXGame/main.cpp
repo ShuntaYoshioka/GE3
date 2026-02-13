@@ -1,34 +1,24 @@
 #include <Windows.h>
 #include <cstdint>
 #include <string>
-#include <format>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <cassert>
-#include <dxgidebug.h>
-#include <dxcapi.h>
+#include <fstream>
+#include <sstream>
 
-#include "externals/DirectXTex/DirectXTex.h"
 #include "engine/io/Input.h"
 #include "WinApp.h"
 #include "Logger.h"
 #include "TextureManager.h"
-
-#include "DirectXCollision.h"
-
-#include <fstream>
-#include <sstream>
 #include "DirectXCommon.h"
 #include "StringUtility.h"
-
-
 
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
-#include <numbers>
-#include "D3DResourceLeakChecker.h"
 
+#include "D3DResourceLeakChecker.h"
 #include <engine/2d/SpriteCommon.h>
 #include <engine/2d/Sprite.h>
 
@@ -39,32 +29,16 @@ using namespace Logger;
 #include <engine/math/Vector3.h>
 #include <engine/math/Vector4.h>
 #include <engine/math/Matrix4x4.h>
-
 #include <engine/math/MyMath.h>
 
-//#pragma comment(lib,"d3d12.lib")
-//#pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"dxcompiler.lib")
 
-//DirectXInputをインクルード
-//#define DERECTINPUT_VERSION 0x0800
-//#include <dinput.h>
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-
 
 struct VertexData {
 	Vector4 position;
 	Vector2 texcoord;
 };
-
-//struct Transform {
-//	Vector3 scale;
-//	Vector3 rotate;
-//	Vector3 translate;
-//};
-
 
 struct MaterialData {
 	std::string textureFilePath;
@@ -74,8 +48,6 @@ struct ModelData {
 	std::vector<VertexData> vertices;
 	MaterialData material;
 };
-
-
 
 std::wstring ConvertString(const std::string& str)
 {
@@ -122,9 +94,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg,
 	}
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
-
-
-
 		//ウィンドウが破棄された
 	case WM_DESTROY:
 		//OSに対して、アプリの終了を伝える
@@ -240,7 +209,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* dxCommon = nullptr;
 
 	//windowsの初期化
-
 	winApp = new WinApp();
 	winApp->initialize();
 
@@ -248,10 +216,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxCommon = new DirectXCommon();
 	dxCommon->Initialize(winApp);
 
-	//出力ウィンドウへの文字入力
-	OutputDebugStringA("Hello,DirectX!\n");
-
-	//DirectXCommon.cppに持って行った
 	//ポインタ
 	Input* input = nullptr;
 
@@ -262,21 +226,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//テクスチャマネージャー
 	TextureManager::GetInstance()->Initialize(dxCommon);
 
-
 	MSG msg{};
-
-	//モデルの読み込み
-	ModelData modelData = LoadObjFile("resources", "plane.obj");
-
-	// WVB用のリソースを作る。Matrix4x4 一つ分のサイズを用意する
-	//Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = dxCommon->CreateBufferResource(sizeof(Matrix4x4));
-
-	//データ書き込む
-//	Matrix4x4* wvpData = nullptr;
-	//wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	//*wvpData = MyMath::MakeIdentity4x4();
-
-	//Transform cameraTransform{ {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
 
 	// ポインタ
 	SpriteCommon* spriteCommon = nullptr;
@@ -284,42 +234,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	spriteCommon = new SpriteCommon();
 	spriteCommon->Initialize(dxCommon);
 
+	//モデルの読み込み
+	ModelData modelData = LoadObjFile("resources", "plane.obj");
 
 	Sprite* sprite = new Sprite;
 	sprite->Initialize(spriteCommon, dxCommon, "Resources/uvChecker.png");
 
-	
 	Vector2 position = sprite->GetPosition();
 	float rotation = sprite->GetRotation();
 	Vector4 color = sprite->GetColor();
 	Vector2 size = sprite->GetSize();
 
-	//複数枚スプライト用
-	//std::vector<Sprite*> sprites;
-	//for (uint32_t i = 0; i < 5; ++i) {
-	//	Sprite* newSprite = new Sprite;
-	//	newSprite->Initialize(spriteCommon, dxCommon, "Resources/uvChecker.png");
-	//	if (i == 1 || i == 3){
-	//		newSprite->ChangeTexture("Resources/monsterBall.png");
-	//	}
-	//	sprites.push_back(newSprite);
-	//}
-
 	dxCommon->ExcuteCommandList();
 	dxCommon->WaitForGpu();
-
-	//複数枚スプライト用
-//	std::vector<Vector2> positions(sprites.size());
-//	std::vector<float> rotations(sprites.size());
-//	std::vector<Vector4> colors(sprites.size());
-//	std::vector<Vector2> sizes(sprites.size());
-
-//	for (size_t i = 0; i < sprites.size(); ++i) {
-//		positions[i] = sprites[i]->GetPosition();
-//		rotations[i] = sprites[i]->GetRotation();
-//		colors[i] = sprites[i]->GetColor();
-//		sizes[i] = sprites[i]->GetSize();
-//	}
 
 	//ウィンドウのXボタンが押されるまでループ
 	while (true) {
@@ -327,8 +254,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		if (winApp->ProcessMessage()) {
 			break;
 		}
-
-		//while(!winApp->proccesMessage())
 
 		input->Update();
 
@@ -351,33 +276,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//開発用のUIの処理
 		ImGui::ShowDemoWindow();
 
-		ImGui::Begin("Settings");
-
-	//	ImGui::ColorEdit4("material", &materialData->x);
+		//3Dモデル用
+		//	ImGui::ColorEdit4("material", &materialData->x);
 		//ImGui::ColorEdit4("material", &materialData->x);
-	//ImGui::DragFloat3("TextureScale", &transformSprite.scale.x, 0.1f);
+	  //ImGui::DragFloat3("TextureScale", &transformSprite.scale.x, 0.1f);
 	//ImGui::DragFloat3("TextureRotate", &transformSprite.rotate.x, 0.1f);
 	//ImGui::DragFloat3("TextureTranslate", &transformSprite.translate.x, 0.5f);
 	//ImGui::DragFloat("rotate.y", &transform.rotate.y, 0.1f);
 
-	ImGui::DragFloat2("Position", &position.x, 1.0f);
-	ImGui::DragFloat("Rotation", &rotation, 0.1f);
-	ImGui::DragFloat2("Size", &size.x, 1.0f);
-	ImGui::ColorEdit4("Color", &color.x);
 
-		//複数枚スプライト
-	//	for (size_t i = 0; i < sprites.size(); ++i) {
-	//		ImGui::Text("Sprite %d", i);
-	//		ImGui::DragFloat2("Position", &positions[i].x, 1.0f);
-	//		ImGui::DragFloat("Rotation", &rotations[i], 0.1f);
-	//		ImGui::DragFloat2("Size", &sizes[i].x, 1.0f);
-	//		ImGui::ColorEdit4("Color", &colors[i].x);
-	//	}
+		ImGui::Begin("Settings");
+		ImGui::DragFloat2("Position", &position.x, 1.0f);
+		ImGui::DragFloat("Rotation", &rotation, 0.1f);
+		ImGui::DragFloat2("Size", &size.x, 1.0f);
+		ImGui::ColorEdit4("Color", &color.x);
 
 		ImGui::End();
-
-
-	//	transform.rotate.y = 9.425f;
 
 		sprite->SetPosition(position);
 		sprite->SetRotation(rotation);
@@ -386,37 +300,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		sprite->Update();
 
-		//複数枚スプライト用
-	//	for (size_t i = 0; i < sprites.size(); ++i) {
-	//		Vector2 Pos = { positions[i].x + (float)i * 260.0f, positions[i].y };
-	//		Vector2 Size = { sizes[i].x * 0.27f, sizes[i].y * 0.48f };
-	//		sprites[i]->SetPosition(Pos);
-	//		sprites[i]->SetRotation(rotations[i]);
-	//		sprites[i]->SetColor(colors[i]);
-	//		sprites[i]->SetSize(Size);
-
-//			sprites[i]->Update();
-//		}
-
 		dxCommon->PreDraw();
 		spriteCommon->SetCommonPipelineState();
+
 
 		//dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		//wvpCBufferの場所を特定
 		//dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
-
 		//dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
-
 		//モデル描画
 		//dxCommon->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
-
 		sprite->Draw();
-
-		//複数枚スプライト用
-		//for (size_t i = 0; i < sprites.size(); ++i) {
-		//	sprites[i]->Draw();
-		//}
 		ImGui::Render();
 		// 実際のcommandListのImGuiの描画コマンドを積む
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon->GetCommandList());
@@ -454,9 +349,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	winApp = nullptr;
 
 	delete sprite;
-	//複数枚スプライト
-	//for (Sprite* s : sprites) { delete s; }
-	//sprites.clear();
+
 	delete spriteCommon;
 
 	return 0;
