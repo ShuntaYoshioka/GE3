@@ -65,25 +65,10 @@ struct Transform {
 	Vector3 translate;
 };
 
-struct Material
-{
-	Vector4 color;
-	int32_t enableLighting;
-	float padding[3];
-	Matrix4x4 uvTransform;
-};
 
 struct MaterialData {
 	std::string textureFilePath;
 };
-
-struct TransformationMatrix
-{
-	Matrix4x4 WVP;
-
-	Matrix4x4 World;
-};
-
 
 struct ModelData {
 	std::vector<VertexData> vertices;
@@ -300,40 +285,41 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	spriteCommon->Initialize(dxCommon);
 
 
-	//Sprite* sprite = new Sprite;
-	//sprite->Initialize(spriteCommon, dxCommon, textureSrvHandleGPU);
+	Sprite* sprite = new Sprite;
+	sprite->Initialize(spriteCommon, dxCommon, "Resources/uvChecker.png");
 
 	
-	//Vector2 position = sprite->GetPosition();
-	//float rotation = sprite->GetRotation();
-	//Vector4 color = sprite->GetColor();
-	//Vector2 size = sprite->GetSize();
+	Vector2 position = sprite->GetPosition();
+	float rotation = sprite->GetRotation();
+	Vector4 color = sprite->GetColor();
+	Vector2 size = sprite->GetSize();
 
-	//複数枚スプライト
-	std::vector<Sprite*> sprites;
-	for (uint32_t i = 0; i < 5; ++i) {
-		Sprite* newSprite = new Sprite;
-		newSprite->Initialize(spriteCommon, dxCommon, "Resources/uvChecker.png");
-		if (i == 1 || i == 3){
-			newSprite->ChangeTexture("Resources/monsterBall.png");
-		}
-		sprites.push_back(newSprite);
-	}
+	//複数枚スプライト用
+	//std::vector<Sprite*> sprites;
+	//for (uint32_t i = 0; i < 5; ++i) {
+	//	Sprite* newSprite = new Sprite;
+	//	newSprite->Initialize(spriteCommon, dxCommon, "Resources/uvChecker.png");
+	//	if (i == 1 || i == 3){
+	//		newSprite->ChangeTexture("Resources/monsterBall.png");
+	//	}
+	//	sprites.push_back(newSprite);
+	//}
 
 	dxCommon->ExcuteCommandList();
 	dxCommon->WaitForGpu();
 
-	std::vector<Vector2> positions(sprites.size());
-	std::vector<float> rotations(sprites.size());
-	std::vector<Vector4> colors(sprites.size());
-	std::vector<Vector2> sizes(sprites.size());
+	//複数枚スプライト用
+//	std::vector<Vector2> positions(sprites.size());
+//	std::vector<float> rotations(sprites.size());
+//	std::vector<Vector4> colors(sprites.size());
+//	std::vector<Vector2> sizes(sprites.size());
 
-	for (size_t i = 0; i < sprites.size(); ++i) {
-		positions[i] = sprites[i]->GetPosition();
-		rotations[i] = sprites[i]->GetRotation();
-		colors[i] = sprites[i]->GetColor();
-		sizes[i] = sprites[i]->GetSize();
-	}
+//	for (size_t i = 0; i < sprites.size(); ++i) {
+//		positions[i] = sprites[i]->GetPosition();
+//		rotations[i] = sprites[i]->GetRotation();
+//		colors[i] = sprites[i]->GetColor();
+//		sizes[i] = sprites[i]->GetSize();
+//	}
 
 	//ウィンドウのXボタンが押されるまでループ
 	while (true) {
@@ -369,47 +355,48 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//	ImGui::ColorEdit4("material", &materialData->x);
 		//ImGui::ColorEdit4("material", &materialData->x);
-	//	ImGui::DragFloat3("TextureScale", &transformSprite.scale.x, 0.1f);
-	//	ImGui::DragFloat3("TextureRotate", &transformSprite.rotate.x, 0.1f);
-	//	ImGui::DragFloat3("TextureTranslate", &transformSprite.translate.x, 0.5f);
-	//	ImGui::DragFloat("rotate.y", &transform.rotate.y, 0.1f);
-	//	ImGui::DragFloat2("Position", &position.x, 1.0f);
-	//	ImGui::DragFloat("Rotation", &rotation, 0.1f);
-	//	ImGui::DragFloat2("Size", &size.x, 1.0f);
-	//	ImGui::ColorEdit4("Color", &color.x);
+	//ImGui::DragFloat3("TextureScale", &transformSprite.scale.x, 0.1f);
+	//ImGui::DragFloat3("TextureRotate", &transformSprite.rotate.x, 0.1f);
+	//ImGui::DragFloat3("TextureTranslate", &transformSprite.translate.x, 0.5f);
+	//ImGui::DragFloat("rotate.y", &transform.rotate.y, 0.1f);
+
+	ImGui::DragFloat2("Position", &position.x, 1.0f);
+	ImGui::DragFloat("Rotation", &rotation, 0.1f);
+	ImGui::DragFloat2("Size", &size.x, 1.0f);
+	ImGui::ColorEdit4("Color", &color.x);
 
 		//複数枚スプライト
-		for (size_t i = 0; i < sprites.size(); ++i) {
-			ImGui::Text("Sprite %d", i);
-			ImGui::DragFloat2("Position", &positions[i].x, 1.0f);
-			ImGui::DragFloat("Rotation", &rotations[i], 0.1f);
-			ImGui::DragFloat2("Size", &sizes[i].x, 1.0f);
-			ImGui::ColorEdit4("Color", &colors[i].x);
-		}
+	//	for (size_t i = 0; i < sprites.size(); ++i) {
+	//		ImGui::Text("Sprite %d", i);
+	//		ImGui::DragFloat2("Position", &positions[i].x, 1.0f);
+	//		ImGui::DragFloat("Rotation", &rotations[i], 0.1f);
+	//		ImGui::DragFloat2("Size", &sizes[i].x, 1.0f);
+	//		ImGui::ColorEdit4("Color", &colors[i].x);
+	//	}
 
 		ImGui::End();
 
 
 	//	transform.rotate.y = 9.425f;
 
-		//sprite->SetPosition(position);
-		//sprite->SetRotation(rotation);
-		//sprite->SetColor(color);
-		//sprite->SetSize(size);
+		sprite->SetPosition(position);
+		sprite->SetRotation(rotation);
+		sprite->SetColor(color);
+		sprite->SetSize(size);
 
-		//sprite->Update();
+		sprite->Update();
 
-		//複数枚スプライト
-		for (size_t i = 0; i < sprites.size(); ++i) {
-			Vector2 Pos = { positions[i].x + (float)i * 260.0f, positions[i].y };
-			Vector2 Size = { sizes[i].x * 0.27f, sizes[i].y * 0.48f };
-			sprites[i]->SetPosition(Pos);
-			sprites[i]->SetRotation(rotations[i]);
-			sprites[i]->SetColor(colors[i]);
-			sprites[i]->SetSize(Size);
+		//複数枚スプライト用
+	//	for (size_t i = 0; i < sprites.size(); ++i) {
+	//		Vector2 Pos = { positions[i].x + (float)i * 260.0f, positions[i].y };
+	//		Vector2 Size = { sizes[i].x * 0.27f, sizes[i].y * 0.48f };
+	//		sprites[i]->SetPosition(Pos);
+	//		sprites[i]->SetRotation(rotations[i]);
+	//		sprites[i]->SetColor(colors[i]);
+	//		sprites[i]->SetSize(Size);
 
-			sprites[i]->Update();
-		}
+//			sprites[i]->Update();
+//		}
 
 		dxCommon->PreDraw();
 		spriteCommon->SetCommonPipelineState();
@@ -424,12 +411,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//dxCommon->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
 
-		//sprite->Draw();
+		sprite->Draw();
 
-		//複数枚スプライト
-		for (size_t i = 0; i < sprites.size(); ++i) {
-			sprites[i]->Draw();
-		}
+		//複数枚スプライト用
+		//for (size_t i = 0; i < sprites.size(); ++i) {
+		//	sprites[i]->Draw();
+		//}
 		ImGui::Render();
 		// 実際のcommandListのImGuiの描画コマンドを積む
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCommon->GetCommandList());
@@ -466,10 +453,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	winApp = nullptr;
 
-	//delete sprite;
+	delete sprite;
 	//複数枚スプライト
-	for (Sprite* s : sprites) { delete s; }
-	sprites.clear();
+	//for (Sprite* s : sprites) { delete s; }
+	//sprites.clear();
 	delete spriteCommon;
 
 	return 0;

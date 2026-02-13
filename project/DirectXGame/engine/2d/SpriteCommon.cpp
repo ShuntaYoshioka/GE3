@@ -91,8 +91,8 @@ void SpriteCommon::CreateRootSignature()
 	//すべての色要素を書き込む
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
-	//裏面(時計回り)を表示しない
-	rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
+	//裏面を表示させる         させないはMODE_BACK;
+	rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
 	//三角形の中を塗りつぶす
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
