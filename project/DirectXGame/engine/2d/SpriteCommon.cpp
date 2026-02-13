@@ -12,7 +12,8 @@ void SpriteCommon::Initialize(DirectXCommon* dxCommon)
 void SpriteCommon::CreateRootSignature()
 {
 
-
+	descriptionRootSignature.Flags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 0;
 	descriptorRange[0].NumDescriptors = 1;
@@ -55,8 +56,10 @@ void SpriteCommon::CreateRootSignature()
 	// シリアライズしてバイナリにする
 	Microsoft::WRL::ComPtr<ID3D10Blob> signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3D10Blob> errorBlob = nullptr;
-	hr = D3D12SerializeRootSignature(&descriptionRootSignature,
-		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+	hr = D3D12SerializeRootSignature(
+		&descriptionRootSignature,
+		D3D_ROOT_SIGNATURE_VERSION_1,
+		&signatureBlob, &errorBlob);
 
 	if (FAILED(hr)) {
 		//Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
@@ -65,7 +68,6 @@ void SpriteCommon::CreateRootSignature()
 
 
 	//バイナリを元に生成
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	hr = dxCommon_->GetDevice()->CreateRootSignature(0,
 		signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(),
 		IID_PPV_ARGS(&rootSignature));
@@ -105,6 +107,7 @@ void SpriteCommon::CreateRootSignature()
 
 void SpriteCommon::CreateGraphicsPipeline()
 {
+
 	// PSOを生成する
 	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get(); // RootSignatrue
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;  // InputLayout
@@ -148,6 +151,10 @@ void SpriteCommon::CreateGraphicsPipeline()
 
 void SpriteCommon::SetCommonPipelineState()
 {
+	if (!dxCommon_ || !graphicsPipelineState) {
+		OutputDebugStringA("SpriteCommon: Error! dxCommon_ or PSO is nullptr\n");
+		return;
+	}
 	dxCommon_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
 	dxCommon_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get()); 
 	dxCommon_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
