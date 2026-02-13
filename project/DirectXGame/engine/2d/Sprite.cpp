@@ -1,9 +1,10 @@
 #include "Sprite.h"
 #include "SpriteCommon.h"
 #include <engine/math/MyMath.h>
+#include <TextureManager.h>
 
 
-void Sprite::Initialize(SpriteCommon* spriteCommon, DirectXCommon* dxCommon, D3D12_GPU_DESCRIPTOR_HANDLE srvHandle)
+void Sprite::Initialize(SpriteCommon* spriteCommon, DirectXCommon* dxCommon, std::string textureFilePath)
 {
 
 	//引数をメンバ変数にセット
@@ -11,7 +12,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, DirectXCommon* dxCommon, D3D
 
 	dxCommon_ = dxCommon;
 	//とりあえずテクスチャのハンドルを保存
-	this->textureSrvHandleGPU = srvHandle;
+	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
 	//頂点リソースを作る
 	vertexResource = dxCommon_->CreateBufferResource(sizeof(VertexData) * 6);
@@ -50,6 +51,11 @@ void Sprite::Initialize(SpriteCommon* spriteCommon, DirectXCommon* dxCommon, D3D
 
 	transformationMatrixData->WVP = MyMath::MakeIdentity4x4();
 	transformationMatrixData->World = MyMath::MakeIdentity4x4();
+
+
+	//テクスチャ
+	TextureManager::GetInstance()->LoadTexture(textureFilePath);
+	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 
 }
 
@@ -111,7 +117,16 @@ void Sprite::Draw(){
 
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource->GetGPUVirtualAddress());
-	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex));
 	//描画
 	dxCommon_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+}
+
+void Sprite::ChangeTexture(const std::string& textureFilePath)
+{
+	TextureManager::GetInstance()->LoadTexture(textureFilePath);
+
+	// indexを差し替える
+	textureIndex =
+		TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 }

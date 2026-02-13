@@ -93,6 +93,9 @@
     <ClCompile Include="engine\math\MyMath.cpp">
       <Filter>engine\Math</Filter>
     </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>engine\2d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\shader\Object3d.PS.hlsl" />
@@ -160,6 +163,9 @@
       <Filter>engine\2d</Filter>
     </ClInclude>
     <ClInclude Include="engine\2d\SpriteCommon.h">
+      <Filter>engine\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
       <Filter>engine\2d</Filter>
     </ClInclude>
   </ItemGroup>

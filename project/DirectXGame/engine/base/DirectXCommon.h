@@ -67,8 +67,6 @@ public:
 
 	Microsoft::WRL::ComPtr <ID3D12Resource>  CreateTextureResource(const DirectX::TexMetadata& metadata);
 
-	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
-
 	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
 	ID3D12Device* GetDevice() { return device.Get(); }
@@ -76,6 +74,7 @@ public:
 
 
 
+	static const uint32_t kMaxSRVCount;
 private:
 
 	//DirectX12デバイス
@@ -109,6 +108,7 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap;

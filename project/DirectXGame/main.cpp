@@ -10,15 +10,16 @@
 
 #include "externals/DirectXTex/DirectXTex.h"
 #include "engine/io/Input.h"
-#include "engine/base/WinApp.h"
-#include "engine/base/Logger.h"
+#include "WinApp.h"
+#include "Logger.h"
+#include "TextureManager.h"
 
 #include "DirectXCollision.h"
 
 #include <fstream>
 #include <sstream>
-#include "engine/base/DirectXCommon.h"
-#include "engine/base/StringUtility.h"
+#include "DirectXCommon.h"
+#include "StringUtility.h"
 
 
 
@@ -273,63 +274,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	input = new Input();
 	input->Initialize(winApp);
 
+	//テクスチャマネージャー
+	TextureManager::GetInstance()->Initialize(dxCommon);
+
+
 	MSG msg{};
-
-	/*/
-	減算
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-
-	乗算
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
-	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
-
-	スクリーン合成
-	blendDesc.RenderTarget[0].SrcBlend = D3D12_INV_DEST_COLOR;
-	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
-
-
-	/*/
 
 	//モデルの読み込み
 	ModelData modelData = LoadObjFile("resources", "plane.obj");
 
 	// WVB用のリソースを作る。Matrix4x4 一つ分のサイズを用意する
-	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = dxCommon->CreateBufferResource(sizeof(Matrix4x4));
+	//Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource = dxCommon->CreateBufferResource(sizeof(Matrix4x4));
 
 	//データ書き込む
-	Matrix4x4* wvpData = nullptr;
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	*wvpData = MyMath::MakeIdentity4x4();
+//	Matrix4x4* wvpData = nullptr;
+	//wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	//*wvpData = MyMath::MakeIdentity4x4();
 
-	Transform cameraTransform{ {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
-
-	Matrix4x4 projectionMatrix = MyMath::MakePerspectiveFovMatrix(0.45f, float(WinApp::kClientWidth) / float(WinApp::kClientHeight), 0.1f, 100.0f);
-
-	DirectX::ScratchImage mipImages = dxCommon->LoadTexture("resources/uvChecker.png");
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource = dxCommon->CreateTextureResource(metadata);
-
-	dxCommon->UploadTextureData(textureResource.Get(), mipImages);
-
-	dxCommon->ExcuteCommandList();
-	dxCommon->WaitForGpu();
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
-	//SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = dxCommon->GetSRVCPUDescriptorHandle(1);
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = dxCommon->GetSRVGPUDescriptorHandle(1);
-
-	// SRV生成
-	dxCommon->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHandleCPU);
+	//Transform cameraTransform{ {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f},{0.0f,0.0f,-5.0f} };
 
 	// ポインタ
 	SpriteCommon* spriteCommon = nullptr;
@@ -351,9 +313,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::vector<Sprite*> sprites;
 	for (uint32_t i = 0; i < 5; ++i) {
 		Sprite* newSprite = new Sprite;
-		newSprite->Initialize(spriteCommon, dxCommon, textureSrvHandleGPU);
+		newSprite->Initialize(spriteCommon, dxCommon, "Resources/uvChecker.png");
 		sprites.push_back(newSprite);
 	}
+
+	dxCommon->ExcuteCommandList();
+	dxCommon->WaitForGpu();
+
 	std::vector<Vector2> positions(sprites.size());
 	std::vector<float> rotations(sprites.size());
 	std::vector<Vector4> colors(sprites.size());
@@ -432,8 +398,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//複数枚スプライト
 		for (size_t i = 0; i < sprites.size(); ++i) {
-			Vector2 Pos = { positions[i].x + (float)i * 100.0f, positions[i].y };
-			Vector2 Size = { sizes[i].x * 0.5f, sizes[i].y * 0.5f };
+			Vector2 Pos = { positions[i].x + (float)i * 260.0f, positions[i].y };
+			Vector2 Size = { sizes[i].x * 0.4f, sizes[i].y * 0.4f };
 			sprites[i]->SetPosition(Pos);
 			sprites[i]->SetRotation(rotations[i]);
 			sprites[i]->SetColor(colors[i]);
@@ -487,6 +453,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region windowsAPIの終了
 	winApp->finalize();
 #pragma endregion WindowsAPIの終了
+
+#pragma region テクスチャマネージャーの終了
+	TextureManager::GetInstance()->Finalize();
+#pragma endregion テクスチャマネージャーの終了
 
 
 	delete winApp;

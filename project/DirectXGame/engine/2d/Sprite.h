@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <d3d12.h>
 #include <wrl.h>
+#include <string>
 
 class SpriteCommon;
 class DirectXCommon;
@@ -14,11 +15,13 @@ class DirectXCommon;
 class Sprite
 {
 public:
-	void Initialize(SpriteCommon* spriteCommon, DirectXCommon* dxCommon, D3D12_GPU_DESCRIPTOR_HANDLE srvHandle);
+	void Initialize(SpriteCommon* spriteCommon, DirectXCommon* dxCommon,std::string textureFilePath);
 
 	void Update();
 
 	void Draw();
+
+	void ChangeTexture(const std::string& textureFilePath);
 
 	//getter
 	const Vector2& GetPosition() const { return position; }
@@ -94,6 +97,9 @@ private:
 	float rotation = 0.0f;
 
 	Vector2 size = { 640.0f,360.0f };
+
+	//テクスチャ番号
+	uint32_t textureIndex = 0;
 
 };
 
