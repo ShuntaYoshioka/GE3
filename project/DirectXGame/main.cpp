@@ -33,7 +33,6 @@ using namespace Logger;
 
 #pragma comment(lib,"dxcompiler.lib")
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 struct VertexData {
 	Vector4 position;
@@ -48,61 +47,6 @@ struct ModelData {
 	std::vector<VertexData> vertices;
 	MaterialData material;
 };
-
-std::wstring ConvertString(const std::string& str)
-{
-	if (str.empty())
-	{
-		return std::wstring();
-	}
-
-	auto sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<const char*>(&str[0]), static_cast<int>(str.size()), NULL, 0);
-	if (sizeNeeded == 0)
-	{
-		return std::wstring();
-	}
-	std::wstring result(sizeNeeded, 0);
-	MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<const char*>(&str[0]), static_cast<int>(str.size()), &result[0], sizeNeeded);
-	return result;
-}
-
-
-std::string ConvertString(const std::wstring& str)
-{
-	if (str.empty())
-	{
-		return std::string();
-	}
-
-	auto sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), NULL, 0, NULL, NULL);
-	if (sizeNeeded == 0)
-	{
-		return std::string();
-	}
-	std::string result(sizeNeeded, 0);
-	WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), result.data(), sizeNeeded, NULL, NULL);
-	return result;
-}
-
-
-
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg,
-	WPARAM wparam, LPARAM lparam) {
-
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
-		return true;
-	}
-	//メッセージに応じてゲーム固有の処理を行う
-	switch (msg) {
-		//ウィンドウが破棄された
-	case WM_DESTROY:
-		//OSに対して、アプリの終了を伝える
-		PostQuitMessage(0);
-		return 0;
-	}
-
-	return DefWindowProc(hwnd, msg, wparam, lparam);
-}
 
 MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename)
 {
@@ -235,7 +179,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	spriteCommon->Initialize(dxCommon);
 
 	//モデルの読み込み
-	ModelData modelData = LoadObjFile("resources", "plane.obj");
+	//ModelData modelData = LoadObjFile("resources", "plane.obj");
 
 	Sprite* sprite = new Sprite;
 	sprite->Initialize(spriteCommon, dxCommon, "Resources/uvChecker.png");
@@ -276,15 +220,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//開発用のUIの処理
 		ImGui::ShowDemoWindow();
 
-		//3Dモデル用
-		//	ImGui::ColorEdit4("material", &materialData->x);
-		//ImGui::ColorEdit4("material", &materialData->x);
-	  //ImGui::DragFloat3("TextureScale", &transformSprite.scale.x, 0.1f);
-	//ImGui::DragFloat3("TextureRotate", &transformSprite.rotate.x, 0.1f);
-	//ImGui::DragFloat3("TextureTranslate", &transformSprite.translate.x, 0.5f);
-	//ImGui::DragFloat("rotate.y", &transform.rotate.y, 0.1f);
-
-
 		ImGui::Begin("Settings");
 		ImGui::DragFloat2("Position", &position.x, 1.0f);
 		ImGui::DragFloat("Rotation", &rotation, 0.1f);
@@ -302,14 +237,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		dxCommon->PreDraw();
 		spriteCommon->SetCommonPipelineState();
-
-
-		//dxCommon->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		//wvpCBufferの場所を特定
-		//dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
-		//dxCommon->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
-		//モデル描画
-		//dxCommon->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
 		sprite->Draw();
 		ImGui::Render();
