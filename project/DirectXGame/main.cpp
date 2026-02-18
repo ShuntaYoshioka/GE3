@@ -33,7 +33,6 @@ using namespace Logger;
 
 #pragma comment(lib,"dxcompiler.lib")
 
-
 struct VertexData {
 	Vector4 position;
 	Vector2 texcoord;
